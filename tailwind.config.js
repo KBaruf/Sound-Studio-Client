@@ -2,14 +2,24 @@
 module.exports = {
   content: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    container: {
-      height: '100vh',
-      width: '100vw',
+    container: {},
+    minWidth: {
+      '1/4': '25%',
+      '1/2': '50%',
+      '3/4': '75%',
     },
     minHeight: {
       '1/4': '25%',
+      '1/2': '50%',
+      '3/4': '75%',
     },
-    extend: {},
+    extend: {
+      height: {
+        height: {
+          128: '32rem',
+        },
+      },
+    },
   },
   plugins: [],
 };

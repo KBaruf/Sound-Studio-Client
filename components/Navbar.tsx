@@ -7,7 +7,7 @@ const Navbar = () => {
   const currentRoute = router.pathname;
 
   const styles = {
-    active: 'bg-gray-200 px-2 py-1 rounded-md',
+    active: 'bg-gray-300 px-2 py-1 rounded-md',
     nonActive: 'text-slate-900',
   };
   const navigation = [
@@ -30,9 +30,11 @@ const Navbar = () => {
     },
   ];
   return (
-    <nav className='flex w-auto justify-between items-center h-16 bg-gray-100 drop-shadow-md px-10  text-slate-900 text-xl gap:0'>
-      <div className='hover:bg-gray-200 px-2 py-1 rounded-md'>Logo</div>
-      <div className='flex w- xl:gap-24 lg:gap-20 md:gap-15 sm:gap-10 xs:gap-6'>
+    <nav className='flex w-auto justify-between items-center h-16 bg-gray-200 drop-shadow-md px-10  text-slate-900 md:text-base sm:text-xm'>
+      <Link href='/' className='hover:bg-gray-200 px-2 py-1 rounded-md cursor-pointer'>
+        Logo
+      </Link>
+      <div className='flex w- xl:gap-25 lg:gap-20 md:gap-15 sm:gap-5'>
         {navigation.map((menu) => {
           return (
             <div

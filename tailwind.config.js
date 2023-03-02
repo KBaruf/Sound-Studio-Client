@@ -19,6 +19,9 @@ module.exports = {
           128: '32rem',
         },
       },
+      inset: {
+        '3px': '3px',
+      },
     },
   },
   plugins: [],

@@ -5,5 +5,5 @@ export type sanityDataTypes = {
     name: string;
     price: string;
   };
-  bannerData: { buttonText: string; category: string; desc: string; discount: string; image: {}; product: string; smallText: string };
+  bannerData: { buttonText: string; category: string; desc: string; discount: string; image: any; product: string; smallText: string };
 };

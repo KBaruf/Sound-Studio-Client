@@ -1,21 +1,12 @@
 import React from 'react';
 import { sanityDataTypes } from '../types';
 import { urlFor } from '@/lib/client';
+import { sideScroll } from '../utils/scroll';
 const BestSelling = (products: sanityDataTypes['products']) => {
   const contentWrapper: { current: any } = React.useRef(null);
-  console.log(contentWrapper);
-  const sideScroll = (element: HTMLDivElement, speed: number, distance: number, step: number) => {
-    let scrollAmount = 0;
-    const slideTimer = setInterval(() => {
-      element.scrollLeft += step;
-      scrollAmount += Math.abs(step);
-      if (scrollAmount >= distance) {
-        clearInterval(slideTimer);
-      }
-    }, speed);
-  };
+
   return (
-    <div className='relative text-center text-slate-700 w-full h-auto'>
+    <div className='relative text-center text-slate-700 w-full h-auto pb-6'>
       <div className='inline-block py-6'>
         <p className='font-bold text-[44px]'>Best Selling Products</p>
         <p className='text-md font-normal'>Our headphones come in a variety of styles</p>
@@ -42,10 +33,10 @@ const BestSelling = (products: sanityDataTypes['products']) => {
           <path strokeLinecap='round' strokeLinejoin='round' d='M11.25 4.5l7.5 7.5-7.5 7.5m-6-15l7.5 7.5-7.5 7.5' />
         </svg>
       </div>
-      <div ref={contentWrapper} className='relative overflow-x-scroll scroll flex m-auto h-auto min-w-full pb-8'>
+      <div ref={contentWrapper} className='relative overflow-x-scroll scroll flex m-auto h-auto min-w-full pb-8 '>
         {Object.values(products).map((product: any) => {
           return (
-            <div key={crypto.randomUUID()} className='mx-6 my-8 min-w-2/3 h-80 bg-gray-200 rounded-lg cursor-pointer'>
+            <div key={crypto.randomUUID()} className='mx-6 my-8 min-w-2/3 h-80 bg-gray-200 rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300 '>
               <img style={{ maxWidth: 'none' }} className='py-2 m-auto' src={`${urlFor(product.image[0]).width(300).height(300)}`} alt='headphone' />
 
               <div className='w-full py-2 font-semibold text-center bottom-0 '>

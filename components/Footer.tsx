@@ -6,7 +6,8 @@ import { AiOutlineInstagram, AiOutlineTwitter } from 'react-icons/ai';
 import Logo from '../public/soundstudio_1_logo.png';
 import { Soundwaves } from '../assets/';
 const Footer = (bannerData: sanityDataTypes['bannerData']) => {
-  const footerBanner = Object.values(bannerData).splice(1, 2);
+  console.log(Object.values(bannerData).splice(1, 1));
+  const footerBanner = Object.values(bannerData).splice(1, 1);
   return (
     <div className='relative min-w-full h-96 bg-red-700 m-4 mb-8 rounded-lg'>
       <Image className='absolute bottom-8 right-1/2 translate-x-1/2' src={Soundwaves} alt={'soundwaves'} width='480' height='480' />

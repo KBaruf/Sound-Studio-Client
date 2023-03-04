@@ -1,6 +1,5 @@
-import BestSelling from '@/components/BestSelling';
-import { type } from 'os';
 import React from 'react';
+import BestSelling from '@/components/BestSelling';
 import HeroBanner from '../components/HeroBanner';
 import Navbar from '../components/Navbar';
 import Brands from '@/components/Brands';

@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useRef } from 'react';
+import Link from 'next/link';
 import { sanityDataTypes } from '../types';
 import { urlFor } from '@/lib/client';
 import { sideScroll } from '../utils/scroll';
 const BestSelling = (products: sanityDataTypes['products']) => {
-  const contentWrapper: { current: any } = React.useRef(null);
+  const contentWrapper: { current: any } = useRef(null);
 
   return (
     <div className='relative text-center text-slate-700 w-full h-auto pb-6'>
@@ -36,14 +37,14 @@ const BestSelling = (products: sanityDataTypes['products']) => {
       <div ref={contentWrapper} className='relative overflow-x-scroll scroll flex m-auto h-auto min-w-full pb-8 '>
         {Object.values(products).map((product: any) => {
           return (
-            <div key={crypto.randomUUID()} className='mx-6 my-8 min-w-2/3 h-80 bg-gray-200 rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300 '>
+            <Link href={`/product/${product.slug.current}`} key={crypto.randomUUID()} className='mx-6 my-8 min-w-2/3 h-80 bg-gray-200 rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300 '>
               <img style={{ maxWidth: 'none' }} className='py-2 m-auto' src={`${urlFor(product.image[0]).width(300).height(300)}`} alt='headphone' />
 
               <div className='w-full py-2 font-semibold text-center bottom-0 '>
                 <p className='text-md'>{product.name}</p>
                 <p>${product.price}</p>
               </div>
-            </div>
+            </Link>
           );
         })}
       </div>

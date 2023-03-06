@@ -18,8 +18,8 @@ const HeroBanner = (bannerData: sanityDataTypes['bannerData']) => {
               <h1 className='font-extrabold text-white text-9xl lg:text-8xl md:text-7xl sm:text-6xl'>{banner?.product.toUpperCase()}</h1>
             </div>
             <div className='flex justify-between w-full h-full pt-10'>
-              <button className='mt-6 h-12 p-2  bg-red-700 rounded-xl'>
-                <p className='text-white text-xl'>{banner.buttonText}</p>
+              <button className='mt-6 h-12 p-2  bg-red-700 rounded-lg drop-shadow-md hover:scale-105 ease-in-out duration-300'>
+                <button className='text-white text-xl'>{banner.buttonText}</button>
               </button>
               <div className='w-96 h-auto md:w-90 sm:w-80'>
                 <h4 className='font-bold text-center'>Description</h4>

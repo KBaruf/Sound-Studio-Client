@@ -1,22 +1,21 @@
 import React from 'react';
 import BestSelling from '@/components/BestSelling';
 import HeroBanner from '../components/HeroBanner';
-import Navbar from '../components/Navbar';
 import Brands from '@/components/Brands';
-import Footer from '@/components/Footer';
+import Layout from '@/components/Layout';
+import FooterBanner from '@/components/FooterBanner';
 import { client } from '../lib/client';
 import { sanityDataTypes } from '@/types';
 
 const Home = ({ products, bannerData }: sanityDataTypes) => {
   return (
-    <div>
-      <Navbar />
+    <Layout>
       <HeroBanner {...bannerData} />
       <BestSelling {...products} />
       <hr className='border-1 border-red-700' />
       <Brands />
-      <Footer {...bannerData} />
-    </div>
+      <FooterBanner {...bannerData} />
+    </Layout>
   );
 };
 export async function getServerSideProps() {

@@ -1,23 +1,39 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { client, urlFor } from '../../lib/client';
+import { useSelector } from 'react-redux';
 import Link from 'next/link';
 import Layout from '@/components/Layout';
 import Ratings from '@/components/Ratings';
 import SimilarProducts from '@/components/SimilarProducts';
 import RandomRating from '../../components/RandomRating';
-import { addToCart, removeItem, totalItems, totalAMount } from '@/store/CartSlice';
+import type { RootState } from '../../store/configure_store';
+import { addToCart, removeItem, totalItems, totalAMount } from '../../store/cartSlice';
 import { useAppSelector, useAppDispatch } from '../../store/hooks';
 
 const ProductDetails = ({ products, product }: { products: any; product: any }) => {
-  const { image, name, details, price, rating } = product[0];
   const dispatch = useAppDispatch();
-  const totalItemsHandler = () => {
+  const itemsAmount = useSelector((state: RootState) => state.cart.total_amount);
+  const [cartItemsCount, setCartItemsCount] = useState(0);
+  const { image, name, details, price, rating } = product[0];
+  // Handles cart increment
+  const incItemsHandler = () => {
     let temp = 0;
-    return temp + 1;
+    if (cartItemsCount < 0) return;
+    setCartItemsCount((cartItemsCount) => cartItemsCount + 1);
+    dispatch(totalItems(temp + 1));
+    dispatch(totalAMount(temp * price + price));
+  };
+  // handlers cart decrement
+  const decItemsHandler = () => {
+    let temp = 0;
+    if (cartItemsCount <= 0) return;
+    setCartItemsCount((cartItemsCount) => cartItemsCount - 1);
+    dispatch(totalItems(temp - 1));
+    dispatch(totalAMount(temp * price - price));
   };
   return (
     <Layout>
-      <main className='flex-grow w-full text-slate-700'>
+      <div key={crypto.randomUUID()} className='flex-grow w-full text-slate-700'>
         <section className='flex w-full  justify-center items-cente gap-20 p-8'>
           <div className='w-[36rem] bg-gray-white outline-dashed rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300 '>
             <img className='m-auto h-[30rem] w-[30rem] py-6' src={`${urlFor(image && image[0])}`} alt={name} />
@@ -36,9 +52,11 @@ const ProductDetails = ({ products, product }: { products: any; product: any }) 
             <div className='flex h-8 text-xl font-bold'>
               <h1 className='mr-4 font-bold text-xl'>Quantity:</h1>{' '}
               <div className='flex justify-center items-center text-center cursor-pointer  '>
-                <span className='w-14 h-8 bg-white border-2 '>-</span>
-                <span className='w-14 h-8 bg-white border-2 border-x-0'>1</span>
-                <span className='w-14 h-8 bg-white border-2' onClick={() => dispatch(totalItems(totalItemsHandler()))}>
+                <span className='w-14 h-8 bg-white border-2 drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200 ' onClick={decItemsHandler}>
+                  -
+                </span>
+                <span className='w-14 h-8 bg-white border-2 border-x-0 b-red-900 '>{cartItemsCount}</span>
+                <span className='w-14 h-8 bg-white border-2 hover:scale-105 ease-in-out duration-300 drop-shadow-md hover:bg-slate-200 ' onClick={incItemsHandler}>
                   +
                 </span>
               </div>
@@ -49,7 +67,7 @@ const ProductDetails = ({ products, product }: { products: any; product: any }) 
             </div>
           </div>
         </section>
-      </main>
+      </div>
       <SimilarProducts products={products} />
     </Layout>
   );

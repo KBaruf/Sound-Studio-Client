@@ -6,4 +6,5 @@ const Cart = (id: string) => {
   const dispatch = useAppDispatch();
   return <div></div>;
 };
+
 export default Cart;

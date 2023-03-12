@@ -1,5 +1,4 @@
 import { createSlice, PayloadAction } from '@reduxjs/toolkit';
-import type { RootState } from './store';
 
 // Type for the slice state
 interface CartState {
@@ -40,9 +39,11 @@ export const cartSlice = createSlice({
     },
     totalItems: (state, action) => {
       state.total_items = state.total_items + action.payload;
+      console.log(state.total_items);
     },
     totalAMount: (state, action) => {
       state.total_amount = state.total_amount + action.payload;
+      console.log(state.total_amount.toFixed(2));
     },
   },
 });

@@ -4,7 +4,6 @@ import { sanityDataTypes } from '../types';
 import { urlFor } from '@/lib/client';
 import { sideScroll } from '../utils/scroll';
 import CurrencyFormat from '@/utils/CurrencyFormat';
-
 const ScrollContainer = (products: sanityDataTypes['products']) => {
   const contentWrapper: { current: any } = useRef(null);
   return (

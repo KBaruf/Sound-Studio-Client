@@ -36,7 +36,7 @@ const Navbar = () => {
   return (
     <>
       <nav className='flex w-auto justify-between items-center h-16 bg-gray-200 drop-shadow-md px-10  text-slate-900 xl:text-xl lg:text-lg md:text-base sm:text-xm font-bold'>
-        <Link href='/' className='hover:bg-gray-200 px-2 py-1 rounded-md cursor-pointer'>
+        <Link href='/' className='px-2 py-1 rounded-md cursor-pointer'>
           <Image src={Logo} alt={'sound studio Logo'} width='280' height='70' />
         </Link>
         <div className='flex xl:gap-15 lg:gap-10 md:gap-5 sm:gap-2'>
@@ -44,7 +44,7 @@ const Navbar = () => {
             return (
               <div
                 key={crypto.randomUUID()}
-                className='flex justify-center hover:bg-slate-400 px-2 py-1 rounded-md
+                className='flex justify-center hover:bg-slate-300 px-2 py-1 rounded-md
                 '
               >
                 <Link href={menu.href} className={currentRoute === '/' ? styles.active : styles.nonActive}>

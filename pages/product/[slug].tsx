@@ -11,62 +11,47 @@ import { addToCart, removeItem, totalItems, totalAMount } from '../../store/cart
 import { useAppDispatch } from '../../store/hooks';
 
 const ProductDetails = ({ products, product }: { products: any; product: any }) => {
-  // destructure products from sanity
-  const { image, name, details, price, rating, _id } = product[0];
-
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const [itemCount, setItemCount] = useState(0);
   const dispatch = useAppDispatch();
   // get Items to be store on local Storage
   const getItemsCount = useSelector((state: RootState) => state.cart.total_items);
   const getAmount = useSelector((state: RootState) => state.cart.total_amount);
   const getCart = useSelector((state: RootState) => state.cart.cart);
 
+  // destructure products from sanity
+  const { image, name, details, price, rating, _id } = product[0];
+
   // Handles cart increment
-  const addItemHandler = () => {
-    setCartItems((cartItems): any => {
-      if (cartItems?.filter((item) => item.id === _id) == null) {
-        return [
-          ...cartItems,
-          {
-            id: _id,
-            quantity: 1,
-          },
-        ];
-      } else {
-        cartItems?.map((item) => {
-          if (item.id === _id) {
-            return {
-              ...item,
-              quantity: item.quantity + 1,
-            };
-          } else {
-            return item;
-          }
-        });
-      }
-    });
-    console.log(cartItems);
+  const incItemsHandler = () => {
+    let temp = 0;
+    if (getItemsCount < 0) return;
+    setItemCount((itemCount) => itemCount + 1);
+    dispatch(totalItems(temp + 1));
+    dispatch(totalAMount(temp * price + price));
   };
   // handle cart decrement
-  const removeItemHandler = () => {
+  const decItemsHandler = () => {
     let temp = 0;
-    cartItems.find((item) => {
-      if (item.id === _id) {
-        setCartItems((cartItems) => cartItems.map((item) => item.count - 1, ...cartItems));
-      } else {
-        setCartItems([
-          {
-            id: _id,
-            count: temp - 1,
-          },
-        ]);
-      }
-    });
+    if (getItemsCount <= 0) return;
+    setItemCount((itemCount) => itemCount + 1);
+    dispatch(totalItems(temp - 1));
+    dispatch(totalAMount(temp * price - price));
   };
 
   // Add to local storage on addToCart button is clicked
-  const addToCartHandler = () => {};
-
+  const addToCartHandler = () => {
+    const allItems = [];
+    const items = {
+      id: _id,
+      total_items: getItemsCount,
+      total_amount: getAmount,
+    };
+    allItems.push(items);
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('cart', JSON.stringify(allItems));
+    }
+    dispatch(addToCart(_id));
+  };
   return (
     <Layout>
       <div key={crypto.randomUUID()} className='flex-grow w-full text-slate-700'>
@@ -88,11 +73,11 @@ const ProductDetails = ({ products, product }: { products: any; product: any }) 
             <div className='flex h-8 text-xl font-bold'>
               <h1 className='mr-4 font-bold text-xl'>Quantity:</h1>{' '}
               <div className='flex justify-center items-center text-center cursor-pointer  '>
-                <span className='w-14 h-8 bg-white border-2 drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200 ' onClick={removeItemHandler}>
+                <span className='w-14 h-8 bg-white border-2 drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200 ' onClick={decItemsHandler}>
                   -
                 </span>
-                <span className='w-14 h-8 bg-white border-2 border-x-0 b-red-900 '>0</span>
-                <span className='w-14 h-8 bg-white border-2 hover:scale-105 ease-in-out duration-300 drop-shadow-md hover:bg-slate-200 ' onClick={addItemHandler}>
+                <span className='w-14 h-8 bg-white border-2 border-x-0 b-red-900 '>{itemCount}</span>
+                <span className='w-14 h-8 bg-white border-2 hover:scale-105 ease-in-out duration-300 drop-shadow-md hover:bg-slate-200 ' onClick={incItemsHandler}>
                   +
                 </span>
               </div>

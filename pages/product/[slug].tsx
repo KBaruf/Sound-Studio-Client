@@ -1,100 +1,150 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { client, urlFor } from '../../lib/client';
-import { useSelector } from 'react-redux';
-import Link from 'next/link';
 import Layout from '@/components/Layout';
 import Ratings from '@/components/Ratings';
 import SimilarProducts from '@/components/SimilarProducts';
+import Cart from '../../components/Cart';
 import RandomRating from '../../components/RandomRating';
 import type { RootState } from '../../store/configure_store';
-import { addToCart, removeItem, totalItems, totalAMount } from '../../store/cartSlice';
-import { useAppDispatch } from '../../store/hooks';
+import { addToCart, totalItems, openCart } from '../../store/cartSlice';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 
 const ProductDetails = ({ products, product }: { products: any; product: any }) => {
-  const [itemCount, setItemCount] = useState(0);
   const dispatch = useAppDispatch();
-  // get Items to be store on local Storage
-  const getItemsCount = useSelector((state: RootState) => state.cart.total_items);
-  const getAmount = useSelector((state: RootState) => state.cart.total_amount);
-  const getCart = useSelector((state: RootState) => state.cart.cart);
+  const [currQty, setCurrQty] = useState(0);
 
   // destructure products from sanity
   const { image, name, details, price, rating, _id } = product[0];
 
+  // get Items to be store on local Storage
+  const getCart = useAppSelector((state: RootState) => state.cart.cart);
+  const getIsCartOpen = useAppSelector((state: RootState) => state.cart.cartIsOpen);
+
+  // calculate total number of Items
+  const calcTotalItemsHandler = () => {
+    const totalCartItems = getCart.map((item) => {
+      return item.quantity;
+    });
+    const totalItemsCount = totalCartItems.length && totalCartItems.reduce((acc: number, curr: number) => acc + curr);
+    return totalItemsCount;
+  };
+
+  // reset current Quantity
+  useEffect(() => {
+    setCurrQty(0);
+  }, [product[0]]);
+
   // Handles cart increment
   const incItemsHandler = () => {
-    let temp = 0;
-    if (getItemsCount < 0) return;
-    setItemCount((itemCount) => itemCount + 1);
-    dispatch(totalItems(temp + 1));
-    dispatch(totalAMount(temp * price + price));
+    if (currQty < 0) return;
+    setCurrQty((currQty) => currQty + 1);
+    const cartController = (_id: string) => {
+      if (getCart?.find((item) => item.id === _id)) {
+        const cartItems = getCart?.map((cartProd) => {
+          if (cartProd.id === _id) {
+            return {
+              ...cartProd,
+              quantity: cartProd.quantity + 1,
+              total: cartProd.quantity * price + price,
+            };
+          } else {
+            return cartProd;
+          }
+        });
+        return cartItems;
+      } else {
+        const cartItems = [
+          ...getCart,
+          {
+            id: _id,
+            quantity: 1,
+            total: price,
+          },
+        ];
+        return cartItems;
+      }
+    };
+    dispatch(addToCart(cartController(_id)));
+    dispatch(totalItems(calcTotalItemsHandler() + 1));
   };
+
   // handle cart decrement
   const decItemsHandler = () => {
-    let temp = 0;
-    if (getItemsCount <= 0) return;
-    setItemCount((itemCount) => itemCount + 1);
-    dispatch(totalItems(temp - 1));
-    dispatch(totalAMount(temp * price - price));
+    if (currQty <= 0) return;
+    setCurrQty((currQty) => currQty - 1);
+    const cartController = (_id: string) => {
+      if (getCart?.find((item) => item.id === _id)) {
+        const cartItems = getCart?.map((cartProd) => {
+          if (cartProd.id === _id) {
+            return {
+              ...cartProd,
+              quantity: cartProd.quantity - 1,
+              total: cartProd.total - price,
+            };
+          } else {
+            return cartProd;
+          }
+        });
+        return cartItems;
+      }
+    };
+    dispatch(addToCart(cartController(_id)));
+    dispatch(totalItems(calcTotalItemsHandler() - 1));
   };
 
   // Add to local storage on addToCart button is clicked
   const addToCartHandler = () => {
-    const allItems = [];
-    const items = {
-      id: _id,
-      total_items: getItemsCount,
-      total_amount: getAmount,
-    };
-    allItems.push(items);
-    if (typeof window !== 'undefined') {
-      localStorage.setItem('cart', JSON.stringify(allItems));
-    }
-    dispatch(addToCart(_id));
+    dispatch(openCart());
   };
+
   return (
-    <Layout>
-      <div key={crypto.randomUUID()} className='flex-grow w-full text-slate-700'>
-        <section className='flex w-full  justify-center items-cente gap-20 p-8'>
-          <div className='w-[36rem] bg-gray-white outline-dashed rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300 '>
-            <img className='m-auto h-[30rem] w-[30rem] py-6' src={`${urlFor(image && image[0])}`} alt={name} />
-          </div>
-          <div className='w-[30rem] px-4'>
-            <h1 className='text-3xl font-extrabold'>{name}</h1>
-            <div className='flex items-center gap-4'>
-              <div className='h-14 flex flex-col justify-center'></div>
-              {rating ? Ratings(rating) : Ratings(4)} <span className='block font-bold text-lg'>{RandomRating()}</span>
+    <div className='relative'>
+      {getIsCartOpen && <div className='absolute h-full w-full top-0 bottom-0 bg-black opacity-40 z-10'>{''}</div>}
+      {getIsCartOpen && <Cart clearIncDec={setCurrQty} products={products} />}
+      <Layout>
+        <div key={crypto.randomUUID()} className='flex-grow w-full text-slate-700'>
+          <section className='flex w-full  justify-center items-center gap-20 p-8'>
+            <div className='w-[36rem] bg-gray-white outline-dashed rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300 '>
+              <img className='m-auto h-[30rem] w-[30rem] py-6' src={`${urlFor(image && image[0])}`} alt={name} />
             </div>
-            <div className='h-60 flex flex-col justify-center'>
-              <h1 className='font-bold py-2'>Details</h1>
-              <p>{details}</p>
-            </div>
-            <h1 className='text-red-700 py-4 font-extrabold text-xl'>${price}</h1>
-            <div className='flex h-8 text-xl font-bold'>
-              <h1 className='mr-4 font-bold text-xl'>Quantity:</h1>{' '}
-              <div className='flex justify-center items-center text-center cursor-pointer  '>
-                <span className='w-14 h-8 bg-white border-2 drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200 ' onClick={decItemsHandler}>
-                  -
-                </span>
-                <span className='w-14 h-8 bg-white border-2 border-x-0 b-red-900 '>{itemCount}</span>
-                <span className='w-14 h-8 bg-white border-2 hover:scale-105 ease-in-out duration-300 drop-shadow-md hover:bg-slate-200 ' onClick={incItemsHandler}>
-                  +
-                </span>
+            <div className='w-[30rem] px-4'>
+              <h1 className='text-3xl font-extrabold'>{name}</h1>
+              <div className='flex items-center gap-4'>
+                <div className='h-14 flex flex-col justify-center'></div>
+                {rating ? Ratings(rating) : Ratings(4)} <span className='block font-bold text-lg'>{RandomRating()}</span>
+              </div>
+              <div className='h-60 flex flex-col justify-center'>
+                <h1 className='font-bold py-2'>Details</h1>
+                <p>{details}</p>
+              </div>
+              <h1 className='text-red-700 py-4 font-extrabold text-xl'>${price}</h1>
+              <div className='flex h-8 text-xl font-bold'>
+                <h1 className='mr-4 font-bold text-xl'>Quantity:</h1>{' '}
+                <div className='flex justify-center items-center text-center cursor-pointer  '>
+                  <button className='w-14 h-8 bg-white border-2 drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200 ' onClick={decItemsHandler}>
+                    -
+                  </button>
+                  <span className='w-14 h-8 bg-white border-2 border-x-0 b-red-900 '>{currQty}</span>
+                  <button className='w-14 h-8 bg-white border-2 hover:scale-105 ease-in-out duration-300 drop-shadow-md hover:bg-slate-200 ' onClick={incItemsHandler}>
+                    +
+                  </button>
+                </div>
+              </div>
+              <div className='flex justify-start items-center gap-8 mt-14 text-lg  font-bold pt-4'>
+                <button className='w-44 h-10 border-2 rounded-lg drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200' onClick={addToCartHandler}>
+                  Add to Cart
+                </button>
+                <button className='w-44 h-10 rounded-lg bg-red-700 text-white drop-shadow-md hover:scale-105 ease-in-out duration-300 '>Buy Now</button>
               </div>
             </div>
-            <div className='flex justify-start items-center gap-8 mt-14 text-lg  font-bold pt-4'>
-              <button className='w-44 h-10 border-2 rounded-lg drop-shadow-md hover:scale-105 ease-in-out duration-300 hover:bg-slate-200' onClick={addToCartHandler}>
-                Add to Cart
-              </button>
-              <button className='w-44 h-10 rounded-lg bg-red-700 text-white drop-shadow-md hover:scale-105 ease-in-out duration-300 '>Buy Now</button>
-            </div>
-          </div>
-        </section>
-      </div>
-      <SimilarProducts products={products} />
-    </Layout>
+          </section>
+        </div>
+        <SimilarProducts products={products} />
+      </Layout>
+    </div>
   );
 };
+
 export async function getStaticPaths() {
   const query = `*[_type == "product"]{
     slug{

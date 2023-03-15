@@ -1,3 +1,3 @@
 import Soundwaves from './soundwaves.png';
-
-export { Soundwaves };
+import EmptyCart from './empty_cart.png';
+export { Soundwaves, EmptyCart };

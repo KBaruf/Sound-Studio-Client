@@ -1,18 +1,8 @@
-import { createSlice, PayloadAction } from '@reduxjs/toolkit';
+import { createSlice } from '@reduxjs/toolkit';
 
 // Type for the slice state
 interface CartState {
-  cart:
-    | any
-    | string
-    | null
-    | [
-        {
-          id: string;
-          total_items: number;
-          total_amount: number;
-        }
-      ];
+  cart: any[];
   cartIsOpen: boolean;
   total_items: number;
   total_amount: number;
@@ -29,7 +19,7 @@ const getLocalstorage = () => {
 };
 
 const initialState: CartState = {
-  cart: [getLocalstorage()],
+  cart: [],
   cartIsOpen: false,
   total_items: 0,
   total_amount: 0,
@@ -40,8 +30,7 @@ export const cartSlice = createSlice({
   initialState,
   reducers: {
     addToCart: (state, action) => {
-      state.cart = [{ id: action.payload, total_items: state.total_items, total_amount: state.total_amount }] || state.cart;
-      state.cartIsOpen = !state.cartIsOpen;
+      state.cart = action.payload;
     },
     removeItem: (state, action) => {
       state.cart = action.payload;
@@ -50,14 +39,17 @@ export const cartSlice = createSlice({
       state.cart = action.payload;
     },
     totalItems: (state, action) => {
-      state.total_items = state.total_items + action.payload;
+      state.total_items = action.payload;
     },
     totalAMount: (state, action) => {
       state.total_amount = state.total_amount + action.payload;
     },
+    openCart: (state) => {
+      state.cartIsOpen = !state.cartIsOpen;
+    },
   },
 });
 
-export const { addToCart, removeItem, clearCart, totalItems, totalAMount } = cartSlice.actions;
+export const { addToCart, removeItem, clearCart, totalItems, totalAMount, openCart } = cartSlice.actions;
 
 export default cartSlice.reducer;

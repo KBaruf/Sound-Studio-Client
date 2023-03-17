@@ -33,7 +33,7 @@ const ScrollContainer = (products: sanityDataTypes['products']) => {
       <div ref={contentWrapper} className='relative overflow-x-scroll scroll flex m-auto h-auto min-w-full pb-8 '>
         {Object.values(products).map((product: any) => {
           return (
-            <Link key={crypto.randomUUID()} href={`/product/${product.slug.current}`} className='mx-6 my-8 min-w-2/3 h-80 bg-gray-200 rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300'>
+            <Link key={product._id} href={`/product/${product.slug.current}`} className='mx-6 my-8 min-w-2/3 h-80 bg-gray-200 rounded-lg cursor-pointer hover:scale-105 ease-in-out duration-300'>
               <img style={{ maxWidth: 'none' }} className='py-2 m-auto ' src={`${urlFor(product.image[0]).width(300).height(300)}`} alt='headphone' />
 
               <div className='w-full py-2 font-semibold text-center bottom-0 '>

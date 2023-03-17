@@ -11,7 +11,7 @@ const HeroBanner = (bannerData: sanityDataTypes['bannerData']) => {
     <div className='text-slate-700'>
       {heroBanner.map((banner) => {
         return (
-          <div key={crypto.randomUUID()} className='relative px-12 py-6 bg-gray-200'>
+          <div key={banner._id} className='relative px-12 py-6 bg-gray-200'>
             <img className='h-1/2 w-1/2 xl:h-[27rem] xl:w-[27rem] lg:w-[26rem] lg:h-[26rem] md:h-[18rem] md:w-[18rem] sm:h-72 sm:w-72 absolute right-52 lg:right-1/3 md:right-18 sm:right-12 sm:bottom-40 lg:bottom-6 md:bottom-40 sm:bottom-20' src={urlFor({ ...banner.image })} alt='hero image' />
             <div>
               <p className='text-3xl'>{banner.smallText}</p> <h3 className='text-6xl pl-4 font-extrabold'>{banner.category}</h3>

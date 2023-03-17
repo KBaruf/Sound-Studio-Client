@@ -25,7 +25,7 @@ const Ratings = (ratingNumber: any) => {
     );
   }
   return (
-    <div key={crypto.randomUUID()} className='flex'>
+    <div className='flex'>
       {output.map((star) => {
         return star;
       })}

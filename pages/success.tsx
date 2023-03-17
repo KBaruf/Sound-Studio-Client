@@ -3,7 +3,7 @@ import { useRouter } from 'next/router';
 import confetti from 'canvas-confetti';
 const Success = () => {
   const router = useRouter();
-  localStorage.clear();
+  if (typeof window !== 'undefined') localStorage.clear();
 
   const duration = 15 * 1000;
   const animationEnd = Date.now() + duration;

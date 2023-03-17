@@ -10,7 +10,7 @@ const FooterBanner = (bannerData: sanityDataTypes['bannerData']) => {
       <Image className='absolute bottom-8 right-1/2 translate-x-1/2' src={Soundwaves} alt={'soundwaves'} width='480' height='480' />
       {footerBanner.map((banner) => {
         return (
-          <div key={crypto.randomUUID()} className='flex justify-between items-center h-full px-8 pt-4'>
+          <div key={banner._id} className='flex justify-between items-center h-full px-8 pt-4'>
             <div className='w-64 pt-8 text-white'>
               <p className='text-lg font-bold'>{banner.discount}</p>
               <h1 className='font-extrabold text-8xl py-4 px-2'>{banner?.largeText1.toUpperCase()}</h1>

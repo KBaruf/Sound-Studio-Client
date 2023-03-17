@@ -32,10 +32,10 @@ const Navbar = () => {
           <Image src={Logo} alt={'sound studio Logo'} width='280' height='70' />
         </Link>
         <div className='flex xl:gap-15 lg:gap-10 md:gap-5 sm:gap-2'>
-          {navigation.map((menu) => {
+          {navigation.map((menu, index) => {
             return (
               <div
-                key={crypto.randomUUID()}
+                key={index}
                 className='flex justify-center hover:bg-slate-300 px-2 py-1 rounded-md
                 '
               >

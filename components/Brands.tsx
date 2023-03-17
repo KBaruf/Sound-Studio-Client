@@ -6,9 +6,9 @@ const Brands = () => {
     <section>
       <h1 className='font-bold text-[44px] text-center text-slate-700'>Popular Brands</h1>
       <div className='flex justify-center min-w-full h-auto'>
-        {Object.values(PopularBrands).map((img) => {
+        {Object.values(PopularBrands).map((img, index) => {
           return (
-            <div key={crypto.randomUUID()}>
+            <div key={index}>
               <Image src={img} alt={'brands'} width='240' height='240' />
             </div>
           );

@@ -1,10 +1,12 @@
 import React from 'react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { useRouter } from 'next/router';
 import { urlFor } from '@/lib/client';
 import { sanityDataTypes } from '@/types';
 const HeroBanner = (bannerData: sanityDataTypes['bannerData']) => {
   const heroBanner = Object.values(bannerData).splice(0, 1);
+  const router = useRouter();
   return (
     <div className='text-slate-700'>
       {heroBanner.map((banner) => {
@@ -19,7 +21,9 @@ const HeroBanner = (bannerData: sanityDataTypes['bannerData']) => {
             </div>
             <div className='flex justify-between w-full h-full pt-10'>
               <div className='mt-6 h-12 p-2  bg-red-700 rounded-lg drop-shadow-md hover:scale-105 ease-in-out duration-300'>
-                <button className='text-white text-xl'>{banner.buttonText}</button>
+                <button onClick={() => router.push(`/product/beats-studio`)} className='text-white text-xl'>
+                  {banner.buttonText}
+                </button>
               </div>
               <div className='w-96 h-auto md:w-90 sm:w-80'>
                 <h4 className='font-bold text-center'>Description</h4>

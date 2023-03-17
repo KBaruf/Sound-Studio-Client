@@ -19,7 +19,7 @@ const getLocalstorage = () => {
 };
 
 const initialState: CartState = {
-  cart: [],
+  cart: getLocalstorage() || [],
   cartIsOpen: false,
   total_items: 0,
   total_amount: 0,

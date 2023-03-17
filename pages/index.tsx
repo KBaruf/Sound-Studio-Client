@@ -8,10 +8,11 @@ import Cart from '@/components/Cart';
 import { client } from '../lib/client';
 import { sanityDataTypes } from '@/types';
 import type { RootState } from '../store/configure_store';
-import { useAppDispatch, useAppSelector } from '../store/hooks';
+import { useAppSelector } from '../store/hooks';
 
 const Home = ({ products, bannerData }: sanityDataTypes) => {
   const getIsCartOpen = useAppSelector((state: RootState) => state.cart.cartIsOpen);
+
   return (
     <Layout>
       {getIsCartOpen && <div className='absolute h-full w-full top-0 bottom-0 bg-black opacity-40 z-10'>{''}</div>}
@@ -24,6 +25,7 @@ const Home = ({ products, bannerData }: sanityDataTypes) => {
     </Layout>
   );
 };
+
 export async function getServerSideProps() {
   const productsQuery = `*[_type == "product"]`;
   const products = await client.fetch(productsQuery);

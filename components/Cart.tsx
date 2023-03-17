@@ -1,16 +1,19 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import type { RootState } from '../store/configure_store';
 import { useAppSelector, useAppDispatch } from '../store/hooks';
 import { urlFor } from '@/lib/client';
 import Image from 'next/image';
 import { EmptyCart } from '../assets';
-import { addToCart, removeItem, totalItems, totalAMount, openCart } from '../store/cartSlice';
-const Cart = ({ products, clearIncDec }: any) => {
-  const dispatch = useAppDispatch();
-  const getItemsCount = useAppSelector((state: RootState) => state.cart.total_items);
-  const getAmount = useAppSelector((state: RootState) => state.cart.total_amount);
-  const getCart = useAppSelector((state: RootState) => state.cart.cart);
+import { addToCart, totalItems, openCart } from '../store/cartSlice';
+import { toast } from 'react-toastify';
+import getStripe from '@/utils/get-stripejs';
+import { useRouter } from 'next/router';
 
+const Cart = ({ products }: any) => {
+  const router = useRouter();
+  const dispatch = useAppDispatch();
+  const getCart = useAppSelector((state: RootState) => state.cart.cart);
   // get products on the cart
   const cartItems = products?.filter((item) => {
     return getCart.some((prod) => {
@@ -38,7 +41,6 @@ const Cart = ({ products, clearIncDec }: any) => {
 
   // increase Item Quantity
   const incQtyHandler = (_id, price) => {
-    console.log(getCart);
     const cartController = (_id) => {
       if (getCart?.find((item) => item.id === _id)) {
         const cartItems = getCart?.map((cartProd) => {
@@ -63,7 +65,6 @@ const Cart = ({ products, clearIncDec }: any) => {
     const cartController = (_id) => {
       if (getCart?.find((item) => item.id === _id)) {
         const cartItems = getCart?.map((cartProd) => {
-          console.log(cartProd.quantity);
           if (cartProd.id === _id) {
             if (cartProd.quantity === 1)
               return {
@@ -88,21 +89,53 @@ const Cart = ({ products, clearIncDec }: any) => {
   };
 
   // remove item from Cart
-  const filterCart = (_id) => {
+  const filterCart = (_id, name) => {
+    toast.warn(`${name} removed From Cart`, {
+      position: 'top-center',
+      autoClose: 1500,
+      hideProgressBar: false,
+    });
     const newCartItems = getCart.filter((item) => {
       if (item.id !== _id) {
         return item;
       }
     });
-    if (getCart.length === 1) {
-      dispatch(addToCart([]));
-      dispatch(totalItems(0));
-      return;
-    }
+    localStorage.setItem('cart', JSON.stringify(newCartItems));
     dispatch(addToCart(newCartItems));
     dispatch(totalItems(calcTotalItemsHandler()));
   };
 
+  //  Checkout With Stripe
+  React.useEffect(() => {
+    // Check to see if this is a redirect back from Checkout
+    const query = new URLSearchParams(window.location.search);
+    if (query.get('success')) {
+      router.push('/success');
+      console.log('Order placed! You will receive an email confirmation.');
+    }
+
+    if (query.get('canceled')) {
+      router.push('/');
+      console.log('Order canceled -- continue to shop around and checkout when you’re ready.');
+    }
+  }, []);
+
+  const handleCheckout = async () => {
+    const stripe = await getStripe();
+    const response = await axios.post('/api/checkout_sessions', {
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      cartItems: { cartItems, getCart },
+    });
+    if (response?.status === 500) return;
+    const data = await response.data;
+    toast.loading('Redirecting...');
+
+    stripe?.redirectToCheckout({
+      sessionId: data.id,
+    });
+  };
   return (
     <>
       <div className='absolute bg-white  h-full w-2/5 top-0 bottom-0 pr-5 right-0 drop-shadow-lg z-20 text-slate-700'>
@@ -114,16 +147,13 @@ const Cart = ({ products, clearIncDec }: any) => {
             </span>{' '}
             <p>Your Cart</p>
             <p className='text-red-700'>
-              {' '}
-              ({calcTotalItemsHandler()} {calcTotalItemsHandler() > 1 ? 'Items' : 'Item'})
+              ({calcTotalItemsHandler()} {calcTotalItemsHandler() > 1 ? 'Units' : 'Unit'} of {getCart.length} {getCart.length > 1 ? 'Items' : 'Item'} )
             </p>
           </div>
         )}
         <div className=' flex p-3 flex-col gap-6 content-center '>
           {cartItems.length > 0 &&
             cartItems.map((item) => {
-              const qty = item.quantity;
-
               return (
                 <div key={item._id} className='relative flex gap-6'>
                   <div className='bg-gray-100 rounded-lg h-40 w-40'>
@@ -150,7 +180,7 @@ const Cart = ({ products, clearIncDec }: any) => {
                         +
                       </button>
                     </div>
-                    <div onClick={() => filterCart(item._id)} className='flex justify-center items-center w-4 h-4  rounded-full border border-red-700 absolute top-0 right-0 text-red-700 cursor-pointer text-xs'>
+                    <div onClick={() => filterCart(item._id, item.name)} className='flex justify-center items-center w-4 h-4  rounded-full border border-red-700 absolute top-0 right-0 text-red-700 cursor-pointer text-xs'>
                       X
                     </div>
                   </div>
@@ -169,7 +199,9 @@ const Cart = ({ products, clearIncDec }: any) => {
               <button onClick={() => dispatch(openCart())} className='w-44 h-10 rounded-lg bg-red-700 text-white font-bold text-lg drop-shadow-md hover:scale-105 ease-in-out duration-300'>
                 Continue Shopping
               </button>
-              <button className='w-44 h-10 rounded-lg bg-red-700 text-white font-bold text-lg drop-shadow-md hover:scale-105 ease-in-out duration-300'>Pay with Stripe</button>
+              <button onClick={handleCheckout} className='w-44 h-10 rounded-lg bg-red-700 text-white font-bold text-lg drop-shadow-md hover:scale-105 ease-in-out duration-300'>
+                Pay with Stripe
+              </button>
             </div>
           </div>
         )}
@@ -183,7 +215,6 @@ const Cart = ({ products, clearIncDec }: any) => {
                 dispatch(openCart());
                 dispatch(addToCart([]));
                 dispatch(totalItems(0));
-                clearIncDec && clearIncDec(0);
               }}
               className='w-44 h-10 rounded-lg bg-red-700 text-white font-bold text-lg drop-shadow-md hover:scale-105 ease-in-out duration-300'
             >

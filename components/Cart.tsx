@@ -130,6 +130,7 @@ const Cart = ({ products }: any) => {
     });
     if (response?.status === 500) return;
     const data = await response.data;
+    if (typeof window !== 'undefined' && data) localStorage.clear();
     toast.loading('Redirecting...');
 
     stripe?.redirectToCheckout({
